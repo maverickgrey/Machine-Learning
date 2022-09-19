@@ -57,6 +57,7 @@ def load_pics(filename):
     for offset in range(sample_cnt):
         pic = read_image_p(p,head_len,offset)
         pics.append(pic)
+    p.close()
     return np.array(pics)
         
 
