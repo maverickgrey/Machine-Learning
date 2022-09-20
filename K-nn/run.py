@@ -9,7 +9,7 @@ log_file = './log.txt'
 
 
 def run():
-    K=1
+    K=6
     print("正在为knn装载数据库...")
     train_pics,train_labels = utils.get_database(train_img_path,train_label_path)
     train_pics = knn.get_mean(train_pics)
@@ -20,8 +20,9 @@ def run():
         acc = knn.acc(res,test_labels)
         print("the accuracy:{}".format(acc))
         f = open(log_file,'a')
-        f.write("K={}.acc:{}".format(K,acc))
-        K += 1
+        f.write("K={}.acc:{}\n".format(K,acc))
+        K += 1 
+        f.close()
 
 if __name__ == '__main__':
     run()
