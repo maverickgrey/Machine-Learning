@@ -10,14 +10,14 @@ def read_data_as_vec(path="./data/housing.csv"):
     mean = []
     var = []
     column_names = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
-    Boston = pd.read_csv("./data/housing.csv",delimiter=r"\s+",names=column_names)
+    Boston = pd.read_csv(path,delimiter=r"\s+",names=column_names)
     for col in Boston:
         avg = Boston[col].mean()
         sq = Boston[col].var()
         mean.append(avg)
         var.append(sq)
 
-    for loc in range(Boston.shape[0]-500):
+    for loc in range(Boston.shape[0]-150):
         data = np.array(Boston.loc[loc]).tolist()
         label = data[-1]
         data.pop(-1)
@@ -25,7 +25,7 @@ def read_data_as_vec(path="./data/housing.csv"):
         labels.append(label)
     return np.array(train),np.array(labels),np.array(mean),np.array(var)
 
-# 将输入X进行归一化的处理
+# 将输入X、Y进行归一化的处理
 def norm(train,labels,mean,var):
     train_res = train
     labels_res = labels
