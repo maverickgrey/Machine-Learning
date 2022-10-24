@@ -3,40 +3,72 @@ import numpy as np
 import pandas as pd
 import math
 
-# 把每行数据以列表的形式读入,返回输入特征X，标签Y，每一列的均值、方差
-def read_data_as_vec(path="./data/housing.csv"):
-    train = []
-    labels = []
+train_ratio = 0.7
+
+# 返回训练集
+def read_training(path='./data/housing.csv'):
+    train_data=[]
+    train_label = []
     mean = []
     var = []
+
     column_names = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
     Boston = pd.read_csv(path,delimiter=r"\s+",names=column_names)
-    for col in Boston:
-        avg = Boston[col].mean()
-        sq = Boston[col].var()
-        mean.append(avg)
-        var.append(sq)
+    train_num = int(Boston.shape[0]*train_ratio)
+    Boston = Boston[:train_num]
+    #求每一列的均值和方差以进行归一化
+    for col in column_names:
+        mean.append(Boston.loc[:,col].mean())
+        var.append(Boston.loc[:,col].var())
+    for row in range(train_num):
+        example = np.array(Boston.iloc[row])
+        label = example[-1]
+        example = np.delete(example,-1)
+        train_data.append(example)
+        train_label.append(label)
+    return train_data,train_label,mean,var
 
-    for loc in range(Boston.shape[0]-150):
-        data = np.array(Boston.loc[loc]).tolist()
-        label = data[-1]
-        data.pop(-1)
-        train.append(data)
-        labels.append(label)
-    return np.array(train),np.array(labels),np.array(mean),np.array(var)
+# 返回测试集
+def read_test(path = './data/housing.csv'):
+    test_data=[]
+    test_label = []
+    mean = []
+    var = []
 
-# 将输入X、Y进行归一化的处理
-def norm(train,labels,mean,var):
+    column_names = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
+    Boston = pd.read_csv(path,delimiter=r"\s+",names = column_names)
+    train_num = int(Boston.shape[0]*(train_ratio))
+    test_num = Boston.shape[0]-train_num
+    Boston = Boston[train_num:]
+    #求每一列的均值和方差以进行归一化
+    for col in column_names:
+        mean.append(Boston.loc[:,col].mean())
+        var.append(Boston.loc[:,col].var())
+    for row in range(test_num):
+        example = np.array(Boston.iloc[row])
+        label = example[-1]
+        example = np.delete(example,-1)
+        test_data.append(example)
+        test_label.append(label)
+    return test_data,test_label,mean,var
+
+
+# 将输入的X进行归一化，而不对Y进行归一化
+def norm(train,mean,var):
     train_res = train
-    labels_res = labels
     for j in range(len(mean)-1):
         for i in range(len(train)):
             train_res[i][j] -= mean[j]
             train_res[i][j] /= math.sqrt(var[j])
-    for i in range(len(labels)):
-        labels_res[i] -= mean[-1]
-        labels_res[i] /= math.sqrt(var[-1])
-    return train_res,labels_res
+    return train_res
 
-train,labels,mean,var = read_data_as_vec()
-train1,labels1 = norm(train,labels,mean,var)
+def stat():
+    column_names = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
+    Boston = pd.read_csv("./data/housing.csv",delimiter=r"\s+",names=column_names)
+    print(Boston.corr())
+
+
+# test_data,test_label,mean,var=read_test()
+# test_data = norm(test_data,mean,var)
+# print(test_data)
+stat()
